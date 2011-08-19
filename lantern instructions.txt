@@ -1,0 +1,10 @@
+My ideal lantern bytecode:
+
+ram:
+0-17 addresses are memory the program can use
+at startup, 0-17 are initialized with the last 18 bytes of the program
+
+instructions:
+0: halt
+1: jump
+2:
