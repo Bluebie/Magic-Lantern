@@ -1,10 +1,41 @@
 My ideal lantern bytecode:
 
 ram:
-0-17 addresses are memory the program can use
-at startup, 0-17 are initialized with the last 18 bytes of the program
+0-15 addresses are memory the program can use, each is 8 bits
 
 instructions:
 0: halt
-1: jump
-2:
+1: jump if register != 0 (args: 4Msb of jump location, 4bit register id, 8lsb of jump location)
+2: set register (args: nil, register, int value)
+3: math with registers (args: left operand register, right operand register, output register, operation code)
+- op 0: add
+- op 1: subtract
+- op 2: multiply
+- op 3: divide
+- op 4: boolean not (out is 0 if in1 is not 0, out is 1 if in1 is 0
+- op 5: is not equal to (out 0 or 1)
+- op 6: is less than or equal (out 0 or 1)
+- op 4: lookup integer sine (input 0-255, output 0-255) - ignores input 2
+
+4: get timestep into register and reset it (args: nil, output register)
+
+5: set color property with register (args: property, input register)
+- prop 0: lightness
+- prop 1: saturation
+- prop 2: hue (using sin lookup table, not 
+- prop 3: red
+- prop 4: green
+- prop 5: blue
+-- Notes: setting 0-2 puts it in LSH mode, ignores previous RGB settings, and vice versa
+
+
+One of my goals is education, so the thought is you can either build in to the upload tool a translation from a simpler more verbose byte code language in to this, or in many cases just simplify the definition of the instruction:
+
+	1: Jump if register is zero, to 8 bit location (args, input register, location) - by ignoring the most significant bits, the computer basically becomes one with 8 bits of program memory instead of up to 4kb
+	3: can seem like it only knows how to math register 0 and an arbitrary register, and set result to register 0
+	4: IDK maybe the first four bits of the time step instruction's second byte should do something cool
+	5: set brightness (args: input register) - by ignoring the property argument, it defaults to lightness, simplifying it to being a simple white LED.
+
+For IRL courses it'd also be quite possible to make something like the Sparkfun Pogobeds, to reprogram little devices with different firmware which has different features, and just tell the students where the upgrade bed is, and they could come and push their lantern in to it whenever and get an updated instruction set or more program space or whatever.
+
+For online courses, the upgrade could happen online. That could either be an update to the uploading tool, so it'd do less strict validation on the byte code uploaded, or it could be be locked down in the device itself - requiring some sort of unlock code to be sent in over USB. Each one could have a different set of unlock codes, unlockable by winning puzzles or whatever. It could be pretty cool for example if a class got to vote on which new instruction they wanted the most, and they'd only get _that one_, leaving their lanterns slightly unique. That could be a terrible idea though.
